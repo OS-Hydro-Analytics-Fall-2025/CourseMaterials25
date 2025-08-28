@@ -13,3 +13,7 @@ The structure of this repository is roughly as follows:
  * `coding_modules`: Code that will be used for hands-on portions of the course.
  * `cheat_sheets`: Some cheat sheets for remembering various commands/concepts.
 
+-----
+
+## Useful links
+1. [Syntax for Markdown](https://www.markdownguide.org/basic-syntax/)

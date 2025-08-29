@@ -17,3 +17,4 @@ The structure of this repository is roughly as follows:
 
 ## Useful links
 1. [Syntax for Markdown](https://www.markdownguide.org/basic-syntax/)
+2. [MIT Open Course: Introduction to Computer Science and Programming in Python](https://ocw.mit.edu/courses/6-0001-introduction-to-computer-science-and-programming-in-python-fall-2016/pages/syllabus/)

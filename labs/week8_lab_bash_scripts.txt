@@ -1,0 +1,148 @@
+#0.1. Go to /workspaces/homework_<ID>/homework_submissions (Hint, use "cd")
+
+#0.2. Create a folder named "bash_practices" (Hint, use "mkdir")
+
+#0.3. Go to "bash_practices" directory (Hint, type "cd ba" and then type "Tab", what did you find?)
+
+    HINT: 
+        If you start typing a file or directory name and press Tab, the shell will try to complete it for you.
+        If there are multiple matches, pressing Tab twice will show a list of possible completions.
+
+Section 1: Practice in the Terminals
+
+#1.1. Print your current directory (Hint, type "pwd", and press Enter)
+
+#1.2. Go to the parent directory and print your current directory (Hint, type ".." and press Enter; then type "pwd" and press Enter)
+
+#1.3. Go back to "bash_practices" directory (Hint, type "cd bash_practices" and press Enter)
+
+#1.4. Under "bash_practices", create a folder named "config" (Hint, type "mkdir config", and press Enter)
+
+#1.5. Create a blank file named "vic.configuration.temp" (Hint, type "touch vic.configuration.temp")
+
+#1.6. Copy the following text in "vic.configuration.temp" 
+(Hint, find this file on the "EXPLORER" section and double click it to enable the text editor)
+
+    #######################################################################
+    # Simulation Parameters
+    #######################################################################
+    STARTYEAR	STY_PH # year model simulation starts
+    STARTMONTH	STM_PH	# month model simulation starts
+    STARTDAY	STD_PH 	# day model simulation starts
+
+    FORCING1	  /workspaces/VIC_sample_data/image/LOC_PH/forcings/LOC_PH.forcings.nc
+    PARAMETERS    /workspaces/VIC_sample_data/image/LOC_PH/parameters/LOC_PH_params.nc
+    RESULT_DIR    /workspaces/VIC_sample_data/output/LOC_PH
+
+NOTE:   vic.configuration.temp is a template for a simplified configuration file for running VIC models.
+        In order to run the VIC model, we will need to replace the PlaceHolder string, e.g., "STY_PH"
+        (PlaceHolder string for the start year), using the actual 4-digit year.
+        The reason why we provide a template file is because 
+            1. Consistency Across Model Runs
+            2. Efficiency and Time-Saving
+            3. Automation and Batch Processing
+        For example, we could save the information for all river basins, start years, start months, and 
+        start dates in a centralized locations. 
+
+Section 2: Practice Bash Scripts
+
+#2.1. Let's practice for loop. 
+#2.1.1. Please create an empty file named "2_1_for_loop_practice_1.sh" (Hint: use "touch")
+#2.1.2. Copy the following codes into this file
+
+    #!/bin/bash
+
+    # EXAMPLE 1: starter code for for-loop
+    # following is an example for looping through
+    # numbers 1 to 5, and print the number to terminal
+
+    # big bracket {<start_number>..<end_number>} creates
+    # a list of numbers between <start_number> and 
+    # <end_number>
+
+    # A for loop starts with "for" and ends with "done"
+    for i in {1..5}; do
+        echo $i; 
+    done
+
+#2.1.3. Run this bash script (Hint: type "bash 2_1_for_loop_practice_1.sh")
+
+There are several things that we need to pay attention to
+    1. "#!/bin/bash" This is the header line for bash script and it should be included in all bash scripts.
+    2. If you want to add comments to a bash script, simply type "#" in the beginning of the line.
+
+#2.2. Let's practice `awk`!
+
+`awk` is a programming language designed for pattern scanning and processing. It's especially useful for working with structured text files, like CSVs, logs, or tabular data.
+
+#2.2.1. Please save the following text into a file named "site_info.csv". "site_info.csv" contains four columns, 
+        the city, start year, start month, and start date of the model run. 
+
+    Buffalo 1990 2 1
+    Rochester 1940 10 1
+    Toronto 1984 2 28
+
+#2.2.2. Can we extract the first column of site_info and save it as a file named "site_info.1stcol.csv"
+(Hint, type "awk '{print $1}' site_info.csv > site_info.1stcol.csv")
+
+# 2.3. Let's practice if statement!
+Please save the following script into a file named "2_3_if_statement_practice.sh"
+
+    #!/bin/bash
+    # define variables in the bash scripts
+    p=1000
+    q=500
+    e=400
+    Ds=100
+    # Simple calculations in bash scripts
+    water_balance=$(($p-$q-$e-$Ds))
+    # echo means "print"
+    echo Water Balance Error in Example 1 is $water_balance
+    echo Start if-statement
+
+    if [[ $water_balance -eq 0 ]]; then
+        echo Water is balanced
+    elif [[ $water_balance -gt 0 ]]; then
+        echo Positive error exists!
+    else
+        echo Negative error exists!
+    fi
+
+How can we run a bash script, remember? "bash 2_3_if_statement_practice.sh" 
+
+# 2.4. Let's practice `sed`!
+sed stands for Stream Editor, and it's a powerful command-line tool used primarily for text manipulation in Unix/Linux environments.
+🔧 What does sed do?
+It reads input line by line, applies specified operations (like substitutions or deletions), and outputs the result. It's especially useful for:
+* Search and replace text
+* Delete lines or characters
+* Insert or append text
+* Transform text (e.g., change case)
+
+# 2.4.1. In "vic.configuration.temp" file, "LOC_PH" is a PlaceHolder for the city name.
+         Please replace the "LOC_PH" using a random Year and save it as a separate file named "vic.configuration.test"
+         (Hint: type "sed "s#LOC_PH#Buffalo#g" vic.configuration.temp > vic.configuration.test ")
+
+Take a look at the updated vic.configuration.test file!
+
+# 2.5.  What if we combined `awk`, for-loop", and `sed`? 
+        Can we create new configuration files for each city using the information provided in site_info.csv? 
+        Let's consider using the following script
+
+        #!/bin/bash
+        for city in `awk '{print $1}' site_info.csv`; do
+            conf_city="config/vic.configuration.$city"
+            sed "s#LOC_PH#$city#g" vic.configuration.temp > $conf_city
+        done
+
+# 2.5.  How can we replace all PlaceHolders, STY_PH, STM_PH, STD_PH, and LOC_PH?
+        Here we will use "while loop" plus `IFS`
+
+    #!/bin/bash
+    # Set IFS to space to split fields
+    while IFS=' ' read -r city year month day; do
+        conf_city="config/vic.configuration.${city}"
+        sed -e "s#LOC_PH#${city}#g" -e "s#STY_PH#${year}#g" -e "s#STM_PH#${month}#g" -e "s#STD_PH#${day}#g" vic.configuration.temp > $conf_city
+    done < site_info.csv
+
+        
